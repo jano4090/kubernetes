@@ -1,0 +1,41 @@
+---
+- name: Complete Kubernetes Setup
+  hosts: kubernetes_masters
+  gather_facts: yes
+  become: yes
+
+  pre_tasks:
+    - name: Display setup information
+      debug:
+        msg: "Starting Kubernetes setup on {{ ansible_hostname }}"
+
+  roles:
+    - common
+    - kubernetes
+
+  tasks:
+    - name: Initialize Kubernetes cluster
+      import_tasks: roles/kubernetes/tasks/init.yml
+      when: inventory_hostname == groups['kubernetes_masters'][0]
+
+    - name: Display success message
+      debug:
+        msg: "✅ Kubernetes cluster is ready! Run 'kubectl get nodes' to verify."
+
+  post_tasks:
+    - name: Create verification script
+      copy:
+        dest: /root/verify.sh
+        content: |
+          #!/bin/bash
+          echo "🔍 Verifying Kubernetes cluster..."
+          echo ""
+          echo "=== Nodes ==="
+          kubectl get nodes -o wide
+          echo ""
+          echo "=== Pods (all namespaces) ==="
+          kubectl get pods --all-namespaces
+          echo ""
+          echo "=== System pods ==="
+          kubectl get pods -n kube-system
+        mode: 0755

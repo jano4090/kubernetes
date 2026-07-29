@@ -1,0 +1,33 @@
+---
+- name: Update system packages
+  dnf:
+    name: '*'
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install essential packages
+  dnf:
+    name:
+      - vim
+      - wget
+      - curl
+      - git
+      - net-tools
+      - bind-utils
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - python3-pip
+    state: present
+
+- name: Install Python modules
+  pip:
+    name:
+      - docker
+      - pyyaml
+      - requests
+    state: present
+
+- name: Disable swap (required for Kubernetes)
+  command: swapoff -a
+  changed_when: false
