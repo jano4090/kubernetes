@@ -1,0 +1,9 @@
+# hosts.yml
+toutes_mes_machines:
+  hosts:
+    fedora:
+      ansible_host: 192.168.1.69  # L'adresse IP actuelle de votre VM Rocky
+      ansible_user: root
+    test:
+      ansible_host: 192.168.1.50
+      ansible_user: root
